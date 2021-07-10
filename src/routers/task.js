@@ -8,7 +8,7 @@ router.post('/tasks', async (req, res) => {
     try {
         await task.save();
         res.send(task);
-    } catch(e) {
+    } catch (e) {
         res.status(500).send(e.message);
     }
 });
@@ -16,11 +16,11 @@ router.post('/tasks', async (req, res) => {
 router.get('/tasks', async (req, res) => {
     try {
         const tasks = await Task.find({});
-        if(!tasks){
+        if (!tasks) {
             return res.status(404).send();
         }
         res.send(tasks);
-    } catch(e){
+    } catch (e) {
         res.status(500).send();
     }
 });
@@ -28,7 +28,7 @@ router.get('/tasks', async (req, res) => {
 router.get('/tasks/:id', async (req, res) => {
     const task = await Task.findById(req.params.id);
     try {
-        if(!task){
+        if (!task) {
             return res.status(404).send();
         }
         res.send(task)
@@ -42,30 +42,35 @@ router.patch('/tasks/:id', async (req, res) => {
     const validUpdates = ['task', 'completed'];
     const isValidUpdate = updates.every((update) => validUpdates.includes(update));
 
-    if(!isValidUpdate) {
-        return res.status(404).send({error: 'Invalid update field.'})
+    if (!isValidUpdate) {
+        return res.status(404).send({ error: 'Invalid update field.' })
     }
 
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true});
 
     try {
-        if(!task){
+        // const task = Task.findById(req.params.id);
+        // updates.forEach((update) => task[update] = req.body[update]);
+        // await task.save();
+
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+
+        if (!task) {
             return res.status(404).send();
         }
         res.send(task);
     } catch (e) {
-        res.status(505).send();
+        res.status(500).send();
     }
 });
 
 router.delete('/tasks/:id', async (req, res) => {
     try {
         const task = await Task.findByIdAndDelete(req.params.id);
-        if(!task) {
+        if (!task) {
             res.status(404).send();
         }
         res.send(task);
-    } catch(e){
+    } catch (e) {
         res.status(500).send();
     }
 });
